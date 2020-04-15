@@ -1,6 +1,6 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptModule } from "nativescript-angular/nativescript.module";
-import { SentryModule } from "nativescript-sentry/angular";
+import { SentryModule } from "nativescript-sentry/src/angular";
 import { AppComponent } from "./app.component";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
 

@@ -1,4 +1,5 @@
 /// <reference path="typings/sentry-api.android.d.ts" />
+/// <reference types="tns-platform-declarations/android" />
 import { BreadCrumb, ExceptionOptions, MessageOptions, SentryUser } from './';
 export declare class Sentry {
     static init(dsn: string): void;

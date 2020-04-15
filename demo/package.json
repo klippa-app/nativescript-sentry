@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@nativescript/theme": "^2.3.3",
-    "nativescript-sentry": "file:../src",
+    "nativescript-sentry": "file:../",
     "nativescript-unit-test-runner": "^0.7.0",
     "tns-core-modules": "^6.5.1"
   },

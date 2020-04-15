@@ -1,4 +1,4 @@
-/// <reference path="./node_modules/tns-platform-declarations/android.d.ts" />
+/// <reference path="../node_modules/tns-platform-declarations/android.d.ts" />
 /// <reference path="./typings/sentry-api.android.d.ts" />
 
 import * as utils from 'tns-core-modules/utils/utils';
