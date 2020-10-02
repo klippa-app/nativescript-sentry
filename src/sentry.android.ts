@@ -93,7 +93,9 @@ export class Sentry {
     nativeUser.setId(user.id);
     nativeUser.setEmail(user.email ? user.email : '');
     nativeUser.setUsername(user.username ? user.username : '');
-    nativeUser.setOthers(nativeMapObject ? nativeMapObject : null);
+    if (nativeMapObject) {
+      nativeUser.setOthers(nativeMapObject);
+    }
     io.sentry.core.Sentry.setUser(nativeUser);
   }
 
