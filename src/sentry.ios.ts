@@ -13,8 +13,16 @@ export class Sentry {
     const event = SentryEvent.alloc().initWithLevel(this._convertSentryLevel(level));
     event.message = message;
 
+    // Set extras
     if (options && options.extra) {
-      event.extra = NSDictionary.dictionaryWithDictionary(options.extra as NSDictionary<string, any>);
+      // create NSDictionary<string, any> for the object provided
+      const dict = NSDictionary.new<string, any>();
+      Object.keys(options.extra).forEach(key => {
+        const nativeDataValue = Sentry._convertDataTypeToString(options.extra[key]);
+        dict.setValueForKey(nativeDataValue, key);
+      });
+
+      event.extra = dict;
     }
 
     if (options && options.tags) {
@@ -35,8 +43,16 @@ export class Sentry {
       name: exception.name
     });
 
+    // Set extras
     if (options && options.extra) {
-      event.extra = NSDictionary.dictionaryWithDictionary(options.extra as NSDictionary<string, any>);
+      // create NSDictionary<string, any> for the object provided
+      const dict = NSDictionary.new<string, any>();
+      Object.keys(options.extra).forEach(key => {
+        const nativeDataValue = Sentry._convertDataTypeToString(options.extra[key]);
+        dict.setValueForKey(nativeDataValue, key);
+      });
+
+      event.extra = dict;
     }
 
     if (options && options.tags) {
@@ -64,8 +80,13 @@ export class Sentry {
     userNative.username = user.username ? user.username : '';
     if (user.data) {
       // create NSDictionary<string, any> for the object provided
-      const dict = NSDictionary.dictionaryWithDictionary(user.data as NSDictionary<string, any>);
-      userNative.extra = dict ? dict : null;
+      const dict = NSDictionary.new<string, any>();
+      Object.keys(user.data).forEach(key => {
+        const nativeDataValue = Sentry._convertDataTypeToString(user.data[key]);
+        dict.setValueForKey(nativeDataValue, key);
+      });
+
+      userNative.extra = dict;
     }
     SentryClient.sharedClient.user = userNative;
   }
@@ -73,8 +94,15 @@ export class Sentry {
   public static setContextTags(tags: any) {
     SentryClient.sharedClient.tags = NSDictionary.dictionaryWithDictionary(tags as NSDictionary<string, string>);
   }
-  public static setContextExtra(extra: any) {
-    SentryClient.sharedClient.extra = NSDictionary.dictionaryWithDictionary(extra as NSDictionary<string, any>);
+  public static setContextExtra(extra: object) {
+    // create NSDictionary<string, any> for the object provided
+    const dict = NSDictionary.new<string, any>();
+    Object.keys(extra).forEach(key => {
+      // adding type check to not force toString on the extra
+      const nativeDataValue = Sentry._convertDataTypeToString(extra[key]);
+      dict.setValueForKey(nativeDataValue, key);
+    });
+    SentryClient.sharedClient.extra = dict;
   }
 
   public static clearContext() {
@@ -104,6 +132,44 @@ export class Sentry {
       default:
         return SentrySeverity.kSentrySeverityInfo;
     }
+  }
+
+  /**
+   * Takes the provided value and checks for boolean, number or object and converts it to string.
+   * @param value
+   */
+  private static _convertDataTypeToString(value: any): string {
+    if (value === undefined || value === null) {
+      return 'null';
+    }
+
+    switch (typeof value) {
+      case 'object':
+        if (value instanceof Date) {
+          return value.toISOString();
+        }
+
+        if (Array.isArray(value)) {
+          const list = [];
+          value.forEach(data => {
+            list.push(this._convertDataTypeToString(data));
+          });
+          return JSON.stringify(list, null, 2);
+        }
+
+        const object = {};
+        Object.keys(value).forEach(itemKey => {
+          object[itemKey] = this._convertDataTypeToString(value[itemKey]);
+        });
+
+        return JSON.stringify(object, null, 2);
+      case 'number':
+        return value.toString();
+      case 'boolean':
+        return value ? 'true' : 'false';
+    }
+
+    return value;
   }
 }
 

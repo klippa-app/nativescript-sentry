@@ -6,9 +6,10 @@ export declare class Sentry {
     static captureBreadcrumb(breadcrumb: BreadCrumb): void;
     static setContextUser(user: SentryUser): void;
     static setContextTags(tags: any): void;
-    static setContextExtra(extra: any): void;
+    static setContextExtra(extra: object): void;
     static clearContext(): void;
     private static _convertSentryLevel;
+    private static _convertDataTypeToString;
 }
 export declare enum Level {
     Fatal = "fatal",
